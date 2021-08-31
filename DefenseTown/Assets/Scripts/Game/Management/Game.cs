@@ -9,6 +9,8 @@ namespace My.Game
     {
         public World World;
 
+        public DataTableManager DataTableManager;
+
         private void Start()
         {
             //todo 임시. .추 후 SceneTransition 작업하면 변경
@@ -17,9 +19,12 @@ namespace My.Game
 
         public void SceneStart()
         {
-            if(World == null)
-                World = new World();
+            if (DataTableManager == null)
+                DataTableManager = new DataTableManager();
+            if (World == null)
+                World = FindObjectOfType<World>();
 
+            DataTableManager.Init();
             World.Init();
         }
     }

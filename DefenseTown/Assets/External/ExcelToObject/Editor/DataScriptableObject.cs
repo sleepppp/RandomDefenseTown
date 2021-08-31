@@ -6,7 +6,7 @@ namespace Core.Data
 {
     public class DataScriptableObject : ScriptableObject
     {
-        [MenuItem("Assets/Create/Data/LoadData")]
+        [MenuItem("My/Create/Excel/ExcelLoadData")]
         static void Create()
         {
             DataScriptableObject instance = CreateInstance<DataScriptableObject>();

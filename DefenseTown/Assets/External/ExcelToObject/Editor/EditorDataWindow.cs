@@ -7,7 +7,7 @@ namespace Core.Data
 {
     public class EditorDataWindow : EditorWindow
     {
-        [MenuItem("Window/Data/ExcelData")]
+        [MenuItem("My/Data/ExcelData")]
         static void Open()
         {
             EditorDataWindow window = 

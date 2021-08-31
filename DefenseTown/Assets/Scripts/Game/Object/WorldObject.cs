@@ -14,12 +14,14 @@ namespace My.Game
         [System.NonSerialized] public Muid Muid;
         Team _team;
 
+        //Scene Init에서 호출되는 함수
         public virtual void StaticInit()
         {
             Muid = new Muid(WorldObjectType);
             _team = Game.Instance.World.GetTeam(TeamType);
         }
 
+        //동적생성때 호출되는 함수
         public virtual void DynamicInit(WorldObjectType objectType, TeamType teamType, bool isPlayerOwner)
         {
             Muid = new Muid(WorldObjectType);

@@ -5,12 +5,17 @@ using UnityEngine;
 namespace My.Game
 {
     using My.Core;
-    public class World
+    public class World : MonoBehaviour
     {
+        public Grid Grid;
+
         Dictionary<TeamType, Team> _teams;
 
         public void Init()
         {
+            if (Grid == null)
+                Grid = FindObjectOfType<Grid>();
+
             if (_teams == null)
                 _teams = new Dictionary<TeamType, Team>();
 
