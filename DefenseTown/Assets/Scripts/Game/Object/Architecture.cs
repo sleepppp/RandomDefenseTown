@@ -21,7 +21,8 @@ namespace My.Game
         public override void OnPickUpdate()
         {
             base.OnPickUpdate();
-            CheckInput();
+            if(IsPlayerOwner)
+                CheckInput();
         }
 
         public void MoveTo(Vector3 destination)
@@ -33,12 +34,12 @@ namespace My.Game
 
         void CheckInput()
         {
-            if (Input.GetMouseButtonDown(1))
+            if (Input.GetMouseButtonDown(1) && Game.Instance.UIManager.IsMousePointerOverTheUI() == false)
             {
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                 RaycastHit result;
-                //if (Physics.Raycast(ray, out result, 100f, 1 << LayerMask.NameToLayer("Grid")))
-                if (Physics.Raycast(ray, out result, 100f))
+                if (Physics.Raycast(ray, out result, 100f, 1 << LayerMask.NameToLayer("Grid")))
+                //if (Physics.Raycast(ray, out result, 100f))
                 {
                     Cell cell = Game.Instance.World.Grid.GetCell(result.point);
                     if (cell != null)

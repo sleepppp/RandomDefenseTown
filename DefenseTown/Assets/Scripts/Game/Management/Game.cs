@@ -25,7 +25,9 @@ namespace My.Game
         private void Update()
         {
             RoutineManager.GameUpdate();
-            World.GameUpdate();
+
+            if (World != null)
+                World.GameUpdate();
         }
 
         public void SceneStart()

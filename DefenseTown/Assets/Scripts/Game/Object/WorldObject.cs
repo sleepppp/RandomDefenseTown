@@ -12,23 +12,25 @@ namespace My.Game
         public TeamType TeamType;
         public bool IsPlayerOwner;
         [System.NonSerialized] public Muid Muid;
-        Team _team;
 
         //Scene 시작할 때 호출
         public virtual void StaticInit()
         {
             Muid = new Muid(WorldObjectType);
-            _team = Game.Instance.World.GetTeam(TeamType);
         }
 
         //동적생성때 호출
         public virtual void DynamicInit(WorldObjectType objectType, TeamType teamType, bool isPlayerOwner)
         {
-            Muid = new Muid(WorldObjectType);
             WorldObjectType = objectType;
+            Muid = new Muid(WorldObjectType);
             TeamType = teamType;
             IsPlayerOwner = isPlayerOwner;
-            _team = Game.Instance.World.GetTeam(TeamType);
+        }
+
+        public Team GetTeam()
+        {
+            return Game.Instance.World.GetTeam(TeamType);
         }
 
         //피킹 했을 때
@@ -43,7 +45,7 @@ namespace My.Game
 
         }
 
-        //Pick되어 있는 동안 Update호출
+        //Pick되어 있는 동안 호출
         public virtual void OnPickUpdate()
         {
 

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace My.UI
 {
@@ -55,6 +56,11 @@ namespace My.UI
         {
             T result = _uiList.TryGetValue(type) as T;
             return result;
+        }
+
+        public bool IsMousePointerOverTheUI()
+        {
+            return EventSystem.current.IsPointerOverGameObject();
         }
     }
 }
