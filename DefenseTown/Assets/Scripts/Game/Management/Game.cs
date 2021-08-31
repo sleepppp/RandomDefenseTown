@@ -5,13 +5,16 @@ using UnityEngine;
 namespace My.Game
 {
     using My.Core;
+    using My.UI;
     public class Game : MonoBehaviourSingleton<Game>
     {
         public World World;
 
         public DataTableManager DataTableManager;
 
-        private void Start()
+        public UIManager UIManager;
+
+        private void Awake()
         {
             //todo 임시. .추 후 SceneTransition 작업하면 변경
             SceneStart();
@@ -23,6 +26,8 @@ namespace My.Game
                 DataTableManager = new DataTableManager();
             if (World == null)
                 World = FindObjectOfType<World>();
+            if (UIManager == null)
+                UIManager = new UIManager();
 
             DataTableManager.Init();
             World.Init();

@@ -31,6 +31,7 @@ namespace My.Game
         Normal = 0,
         Block = 1,
     }
+
 }
 
 
