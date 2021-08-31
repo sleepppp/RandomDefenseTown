@@ -11,10 +11,16 @@ namespace My.Game
 
         Dictionary<TeamType, Team> _teams;
 
+        List<WorldObject> _pickList;    //만약 군집효과 구현이 필요하면 이렇게 처리하지말고 별도의 객체로 빼서 처리
+
         public void Init()
         {
             if (Grid == null)
                 Grid = FindObjectOfType<Grid>();
+            //todo Grid Init from data
+
+            if (_pickList == null)
+                _pickList = new List<WorldObject>();
 
             if (_teams == null)
                 _teams = new Dictionary<TeamType, Team>();
@@ -24,6 +30,14 @@ namespace My.Game
                 Team newTeam = new Team();
                 newTeam.Init((TeamType)i);
                 _teams.Add((TeamType)i, newTeam);
+            }
+        }
+
+        public void GameUpdate()
+        {
+            for(int i =0; i < _pickList.Count; ++i)
+            {
+                _pickList[i].OnPickUpdate();
             }
         }
 

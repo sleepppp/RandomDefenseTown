@@ -9,7 +9,8 @@ Shader "Unlit/Grid"
 
       [Header(Grid)]
       _Scale("Scale", Float) = 1.0
-      _GraduationScale("Graduation Scale", Float) = 1.0
+      _GraduationScaleX("Graduation ScaleX", Float) = 1.0
+      _GraduationScaleY("Graduation ScaleY", Float) = 1.0
       _Thickness("Lines Thickness", Range(0.0001, 0.01)) = 0.005
       _SecondaryFadeInSpeed("Secondary Fade In Speed", Range(0.1, 4)) = 0.5
       [Toggle]_isShowCellState("ShowCellState",Float) = 0
@@ -21,8 +22,8 @@ Shader "Unlit/Grid"
 
       ZWrite On // We need to write in depth to avoid tearing issues
       ZTest Always
-      Blend  SrcAlpha OneMinusSrcAlpha
-      //Blend SrcAlpha DstAlpha    
+      //Blend  SrcAlpha OneMinusSrcAlpha
+      Blend SrcAlpha DstAlpha    
       //Blend One One
       Cull Off
       Pass
@@ -56,7 +57,8 @@ Shader "Unlit/Grid"
          float4 _MaskTexture_ST;
 
          float _Scale;
-         float _GraduationScale;
+         float _GraduationScaleX;
+         float _GraduationScaleY;
 
          float _Thickness;
          float _SecondaryFadeInSpeed;
@@ -76,7 +78,8 @@ Shader "Unlit/Grid"
             // Remap UVs from [0:1] to [-0.5:0.5] to make scaling effect start from the center 
             o.uv = v.uv - 0.5f;
             // Scale the whole thing if necessary
-            o.uv *= _GraduationScale;
+            o.uv.x *= _GraduationScaleX;
+            o.uv.y *= _GraduationScaleY;
 
             // UVs for mask texture
             o.uv1 = TRANSFORM_TEX(v.uv1, _MaskTexture);

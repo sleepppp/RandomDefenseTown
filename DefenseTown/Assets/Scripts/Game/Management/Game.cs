@@ -14,14 +14,24 @@ namespace My.Game
 
         public UIManager UIManager;
 
+        public RoutineManager RoutineManager;
+
         private void Awake()
         {
             //todo 임시. .추 후 SceneTransition 작업하면 변경
             SceneStart();
         }
 
+        private void Update()
+        {
+            RoutineManager.GameUpdate();
+            World.GameUpdate();
+        }
+
         public void SceneStart()
         {
+            if (RoutineManager == null)
+                RoutineManager = new RoutineManager();
             if (DataTableManager == null)
                 DataTableManager = new DataTableManager();
             if (World == null)

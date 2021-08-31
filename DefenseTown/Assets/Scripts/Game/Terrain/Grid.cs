@@ -5,53 +5,73 @@ using UnityEngine;
 namespace My.Game
 {
     using My.Data;
-    [RequireComponent(typeof(MeshRenderer),typeof(MeshFilter))]
+    using My.Core;
+    [RequireComponent(typeof(MeshRenderer),typeof(MeshFilter),typeof(MeshCollider))]
     public class Grid : MonoBehaviour
     {
         static readonly int _mainColorKey = Shader.PropertyToID("_MainColor");
         static readonly int _seconderyColorKey = Shader.PropertyToID("_SecondaryColor");
         static readonly int _maskTextureKey = Shader.PropertyToID("_MaskTexture");
         static readonly int _showCellStateKey = Shader.PropertyToID("_isShowCellState");
+        static readonly int _GraduationScaleXKey = Shader.PropertyToID("_GraduationScaleX");
+        static readonly int _GraduationScaleYKey = Shader.PropertyToID("_GraduationScaleY");
 
         Cell[,] _cellList;
 #if UNITY_EDITOR
         [SerializeField] bool _isTest = false;
 #endif
-        [SerializeField]int _cellWidthCount;
-        [SerializeField]int _cellHeightCount;
+        [SerializeField]int _cellWidthCount;        //10단위로 처리하게 끔 되어있음 추 후 개선 예정
+        [SerializeField]int _cellHeightCount;       //10단위로 처리하게 끔 되어있음 추 후 개선 예정
+        [SerializeField]Terrain _terrain;
 
         Material _gridMaterial;
         MeshRenderer _meshRenderer;
 
         Texture2D _cellDataTexture;
+
+        PathFinder _pathFinder;
+
+
+        public int CellWidthCount { get { return _cellWidthCount; } }
+        public int CellHeightCount { get { return _cellHeightCount; } }
+        public PathFinder PathFinder { get { return _pathFinder; } }
+
 #if UNITY_EDITOR
         private void Start()
         {
             if(_isTest)
             {
-                TestInit(_cellWidthCount, _cellHeightCount);
+                Init(_cellWidthCount, _cellHeightCount);
 
-                //Test~
+                //test~
                 SetCellState(_cellWidthCount / 2, _cellHeightCount / 2, CellState.Block, true);
+                SetCellState(0,1, CellState.Block, true);
                 ShowCellState(true);
             }
         }
 #endif
-        //private func~
-
-        //public func~
-
-        public void TestInit(int cellWidthCount, int cellHeightCount)
+        public void Init(int cellWidthCount, int cellHeightCount)
         {
             _cellWidthCount = cellWidthCount;
             _cellHeightCount = cellHeightCount;
 
-            Init();
+            InitComponent();
+        }
 
-            _cellList = new Cell[cellHeightCount, cellWidthCount];
-            for(int y=0; y < cellHeightCount; ++y)
+        void InitComponent()
+        {
+            _meshRenderer = GetComponent<MeshRenderer>();
+            _gridMaterial = _meshRenderer.material;
+
+            _cellDataTexture = new Texture2D(_cellWidthCount, _cellHeightCount, TextureFormat.RGB24, false);
+            _cellDataTexture.filterMode = FilterMode.Point;
+            _cellDataTexture.wrapMode = TextureWrapMode.Clamp;
+            _cellDataTexture.Apply();
+
+            _cellList = new Cell[_cellHeightCount, _cellWidthCount];
+            for (int y = 0; y < _cellHeightCount; ++y)
             {
-                for(int x=0;x < cellWidthCount; ++x)
+                for (int x = 0; x < _cellWidthCount; ++x)
                 {
                     Cell cell = new Cell();
                     cell.Init
@@ -67,17 +87,18 @@ namespace My.Game
             }
             _cellDataTexture.Apply();
             _gridMaterial.SetTexture(_maskTextureKey, _cellDataTexture);
-        }
 
-        public void Init()
-        {
-            _meshRenderer = GetComponent<MeshRenderer>();
-            _gridMaterial = _meshRenderer.material;
+            int widthMulCount = _cellWidthCount / 10;
+            int heightMulCount = _cellHeightCount / 10;
 
-            _cellDataTexture = new Texture2D(_cellWidthCount, _cellHeightCount, TextureFormat.RGB24, false);
-            _cellDataTexture.filterMode = FilterMode.Point;
-            _cellDataTexture.wrapMode = TextureWrapMode.Clamp;
-            _cellDataTexture.Apply();
+            transform.localScale = new Vector3(widthMulCount, 1f, heightMulCount);
+            _gridMaterial.SetFloat(_GraduationScaleXKey, widthMulCount);
+            _gridMaterial.SetFloat(_GraduationScaleYKey, heightMulCount);
+
+            if(_terrain == null)
+                _terrain = FindObjectOfType<Terrain>();
+
+            _pathFinder = new PathFinder();
         }
 
         public void ShowGrid(bool bShow)
@@ -138,6 +159,24 @@ namespace My.Game
             if (IsOutOfRange(index.x, index.y))
                 return null;
             return GetCell(index.x, index.y);
+        }
+
+        public Vector3 GetPositionContainY(Vector3 position)
+        {
+            if (_terrain == null)
+                return position;
+
+            Ray ray = new Ray();
+            ray.origin = position;
+            ray.direction = Vector3.down;
+
+            int terrainMask = 1 << LayerMask.NameToLayer("Terrain");
+
+            RaycastHit result;
+            if (Physics.Raycast(ray, out result, 10f, terrainMask))
+                return result.point;
+            else
+                return position;
         }
 
         public static Vector2Int TransformPositionToIndex(Vector3 position)
