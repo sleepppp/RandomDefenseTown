@@ -36,7 +36,7 @@ namespace My.UI
             _uiList.Remove(uiType);
         }
 
-        public void RangeDestroy(UIPanelType targetType)
+        public void RangeRemoveUI(UIPanelType targetType)
         {
             if (_uiHistory.Contains(targetType) == false)
                 return;
@@ -58,7 +58,7 @@ namespace My.UI
             return result;
         }
 
-        public bool IsMousePointerOverTheUI()
+        public bool IsMousePointerOverUI()
         {
             return EventSystem.current.IsPointerOverGameObject();
         }

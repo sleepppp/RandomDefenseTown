@@ -14,8 +14,14 @@ namespace My.Game
         {
             GameData = new GameData();
 
-            //todo load ColorTable
-            //string loadPath = "";
+            LoadColorTable();
+        }
+
+        void LoadColorTable()
+        { 
+            //todo adressable이 비동기 밖에 지원을 안하므로 이렇게 처리
+            string path = "ColorTable";
+            ColorTable = Resources.Load<ColorTableSO>(path);
         }
     }
 }

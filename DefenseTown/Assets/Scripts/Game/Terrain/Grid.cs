@@ -17,12 +17,9 @@ namespace My.Game
         static readonly int _GraduationScaleYKey = Shader.PropertyToID("_GraduationScaleY");
 
         Cell[,] _cellList;
-#if UNITY_EDITOR
-        [SerializeField] bool _isTest = false;
-#endif
-        [SerializeField]int _cellWidthCount;        //10단위로 처리하게 끔 되어있음 추 후 개선 예정
-        [SerializeField]int _cellHeightCount;       //10단위로 처리하게 끔 되어있음 추 후 개선 예정
-        [SerializeField]Terrain _terrain;
+        int _cellWidthCount;    
+        int _cellHeightCount;   
+        [SerializeField] GridSO _gridSO;
 
         Material _gridMaterial;
         MeshRenderer _meshRenderer;
@@ -31,74 +28,60 @@ namespace My.Game
 
         PathFinder _pathFinder;
 
-
         public int CellWidthCount { get { return _cellWidthCount; } }
         public int CellHeightCount { get { return _cellHeightCount; } }
         public PathFinder PathFinder { get { return _pathFinder; } }
 
-#if UNITY_EDITOR
+        public GridSO GridSO { get { return _gridSO; } }
+
         private void Start()
         {
-            if(_isTest)
-            {
-                Init(_cellWidthCount, _cellHeightCount);
+            Init(_gridSO);
+        }
+#if UNITY_EDITOR
+        public void EditorInit(GridSO gridSO)
+        {
+            _gridSO = gridSO;
+            _cellWidthCount = gridSO.CellWidthCount;
+            _cellHeightCount = gridSO.CellHeightCount;
 
-                //test~
-                SetCellState(_cellWidthCount / 2, _cellHeightCount / 2, CellState.Block, true);
-                SetCellState(0,1, CellState.Block, true);
-                ShowCellState(true);
-            }
+            Mesh mesh = MeshGenerator.CreateQuad(Vector3.zero, Vector3.one, 10);
+            GetComponent<MeshFilter>().sharedMesh = mesh;
+           _gridMaterial = new Material(Shader.Find("Unlit/Grid"));
+            _meshRenderer = GetComponent<MeshRenderer>();
+            _meshRenderer.sharedMaterial = _gridMaterial;
+            _cellDataTexture = gridSO.GetTexture();
+            CalcShaderProperties();
+            BindMaskTexture();
+            ShowGrid(true);
+            ShowCellState(true);
+            SetGridColor(Color.yellow);
+
+            //todo 추 후 수정
+            transform.Translate(Vector3.up * 0.1f);
         }
 #endif
-        public void Init(int cellWidthCount, int cellHeightCount)
+        public void Init(GridSO gridSO)
         {
-            _cellWidthCount = cellWidthCount;
-            _cellHeightCount = cellHeightCount;
+            _cellWidthCount = gridSO.CellWidthCount;
+            _cellHeightCount = gridSO.CellHeightCount;
 
-            InitComponent();
-        }
-
-        void InitComponent()
-        {
             _meshRenderer = GetComponent<MeshRenderer>();
             _gridMaterial = _meshRenderer.material;
+            _cellDataTexture = _gridSO.GetTexture();
 
-            _cellDataTexture = new Texture2D(_cellWidthCount, _cellHeightCount, TextureFormat.RGB24, false);
-            _cellDataTexture.filterMode = FilterMode.Point;
-            _cellDataTexture.wrapMode = TextureWrapMode.Clamp;
-            _cellDataTexture.Apply();
+            CreateCellList();
+            BindMaskTexture();
+            CalcShaderProperties();
 
-            _cellList = new Cell[_cellHeightCount, _cellWidthCount];
-            for (int y = 0; y < _cellHeightCount; ++y)
+            for (int y=0;y < _cellHeightCount; ++y)
             {
-                for (int x = 0; x < _cellWidthCount; ++x)
+                for(int x=0;x < _cellWidthCount; ++x)
                 {
-                    Cell cell = new Cell();
-                    cell.Init
-                        (
-                        new Vector3(x, 0f, y),
-                        Vector2.one,
-                        CellType.Moveable
-                        );
-
-                    _cellList[y, x] = cell;
-                    SetCellState(x, y, CellState.Normal, false);
+                    SetCellState(x,y, gridSO.GetCellType(x,y) == CellType.Block ? CellState.Block : CellState.Normal, false);
                 }
             }
             _cellDataTexture.Apply();
-            _gridMaterial.SetTexture(_maskTextureKey, _cellDataTexture);
-
-            int widthMulCount = _cellWidthCount / 10;
-            int heightMulCount = _cellHeightCount / 10;
-
-            transform.localScale = new Vector3(widthMulCount, 1f, heightMulCount);
-            _gridMaterial.SetFloat(_GraduationScaleXKey, widthMulCount);
-            _gridMaterial.SetFloat(_GraduationScaleYKey, heightMulCount);
-
-            if(_terrain == null)
-                _terrain = FindObjectOfType<Terrain>();
-
-            _pathFinder = new PathFinder();
         }
 
         public void ShowGrid(bool bShow)
@@ -126,11 +109,8 @@ namespace My.Game
                 return;
 
             _cellList[indexY, indexX].State = state;
-            Color cellColor = _cellList[indexY, indexX].CanPass ? Color.green : Color.red;
-            _cellDataTexture.SetPixel(indexX, indexY, cellColor);
-            //todo ColorTable 정의되면 변경
-            //ColorTableSO.ColorDesc colorDesc = _cellList[indexY, indexX].CanPass ? ColorTableSO.ColorDesc.Cell_Moveable : ColorTableSO.ColorDesc.Cell_Block;
-            //_cellDataTexture.SetPixel(indexX, indexY,Game.Instance.DataTableManager.ColorTable.GetColor(colorDesc));
+            ColorTableSO.ColorDesc colorDesc = _cellList[indexY, indexX].CanPass ? ColorTableSO.ColorDesc.Cell_Moveable : ColorTableSO.ColorDesc.Cell_Block;
+            _cellDataTexture.SetPixel(indexX, indexY,Game.Instance.DataTableManager.ColorTable.GetColor(colorDesc));
 
             if (bAutoApplyTexture)
             {
@@ -163,9 +143,6 @@ namespace My.Game
 
         public Vector3 GetPositionContainY(Vector3 position)
         {
-            if (_terrain == null)
-                return position;
-
             Ray ray = new Ray();
             ray.origin = position;
             ray.direction = Vector3.down;
@@ -177,6 +154,41 @@ namespace My.Game
                 return result.point;
             else
                 return position;
+        }
+
+        public void CalcShaderProperties()
+        {
+            int widthMulCount = _cellWidthCount / 10;
+            int heightMulCount = _cellHeightCount / 10;
+
+            transform.localScale = new Vector3(widthMulCount, 1f, heightMulCount);
+            _gridMaterial.SetFloat(_GraduationScaleXKey, widthMulCount);
+            _gridMaterial.SetFloat(_GraduationScaleYKey, heightMulCount);
+        }
+
+        void BindMaskTexture()
+        {
+            _gridMaterial.SetTexture(_maskTextureKey, _cellDataTexture);
+        }
+
+        void CreateCellList()
+        {
+            _cellList = new Cell[_cellHeightCount, _cellWidthCount];
+            for (int y = 0; y < _cellHeightCount; ++y)
+            {
+                for (int x = 0; x < _cellWidthCount; ++x)
+                {
+                    Cell cell = new Cell();
+                    cell.Init
+                        (
+                        new Vector3(x, 0f, y),
+                        Vector2.one,
+                        CellType.Moveable
+                        );
+
+                    _cellList[y, x] = cell;
+                }
+            }
         }
 
         public static Vector2Int TransformPositionToIndex(Vector3 position)

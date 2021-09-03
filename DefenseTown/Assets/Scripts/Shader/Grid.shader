@@ -22,8 +22,8 @@ Shader "Unlit/Grid"
 
       ZWrite On // We need to write in depth to avoid tearing issues
       ZTest Always
-      //Blend  SrcAlpha OneMinusSrcAlpha
-      Blend SrcAlpha DstAlpha    
+      Blend  SrcAlpha OneMinusSrcAlpha
+      //Blend SrcAlpha DstAlpha    
       //Blend One One
       Cull Off
       Pass

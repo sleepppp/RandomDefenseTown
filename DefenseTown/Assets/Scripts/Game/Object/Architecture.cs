@@ -34,7 +34,7 @@ namespace My.Game
 
         void CheckInput()
         {
-            if (Input.GetMouseButtonDown(1) && Game.Instance.UIManager.IsMousePointerOverTheUI() == false)
+            if (Input.GetMouseButtonDown(1) && Game.Instance.UIManager.IsMousePointerOverUI() == false)
             {
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                 RaycastHit result;

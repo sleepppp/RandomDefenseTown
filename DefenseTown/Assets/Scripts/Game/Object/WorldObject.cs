@@ -11,7 +11,7 @@ namespace My.Game
         public WorldObjectType WorldObjectType;
         public TeamType TeamType;
         public bool IsPlayerOwner;
-        [System.NonSerialized] public Muid Muid;
+        [HideInInspector] public Muid Muid;
 
         //Scene 시작할 때 호출
         public virtual void StaticInit()
