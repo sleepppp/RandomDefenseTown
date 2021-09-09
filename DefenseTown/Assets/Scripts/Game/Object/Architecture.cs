@@ -36,10 +36,8 @@ namespace My.Game
         {
             if (Input.GetMouseButtonDown(1) && Game.Instance.UIManager.IsMousePointerOverUI() == false)
             {
-                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                 RaycastHit result;
-                if (Physics.Raycast(ray, out result, 100f, 1 << LayerMask.NameToLayer("Grid")))
-                //if (Physics.Raycast(ray, out result, 100f))
+                if (Grid.RaycastToGrid(Camera.main,Input.mousePosition,out result))
                 {
                     Cell cell = Game.Instance.World.Grid.GetCell(result.point);
                     if (cell != null)

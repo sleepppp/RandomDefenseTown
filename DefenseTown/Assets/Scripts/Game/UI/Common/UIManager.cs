@@ -60,6 +60,8 @@ namespace My.UI
 
         public bool IsMousePointerOverUI()
         {
+            if (EventSystem.current == null)
+                return false;
             return EventSystem.current.IsPointerOverGameObject();
         }
     }

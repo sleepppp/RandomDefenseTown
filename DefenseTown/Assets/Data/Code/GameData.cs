@@ -8,12 +8,12 @@ namespace My.Data
 {
 	public class GameData
 	{
-		public string TestPath = "Assets/Data/TSV/Test.tsv";
-		public Dictionary<int,Test> Test;
+		public string TeamRecordPath = "Assets/Data/TSV/TeamRecord.tsv";
+		public Dictionary<int,TeamRecord> TeamRecord;
 
 		public GameData()
 		{
-			Test  =  TableStream.LoadTableByTSV(TestPath).TableToDictionary<int,Test>();
+			TeamRecord  =  TableStream.LoadTableByTSV(TeamRecordPath).TableToDictionary<int,TeamRecord>();
 		}
 	}
 }

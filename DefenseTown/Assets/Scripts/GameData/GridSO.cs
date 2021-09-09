@@ -42,19 +42,38 @@ namespace My.Data
         public void SetCellType(int indexX, int indexY,My.Game.CellType cellType)
         {
             int index = CellWidthCount * indexY + indexX;
-
+            if (index < 0 || index >= CellTypes.Length)
+                return;
             CellTypes[index] = cellType;
         }
 
         public My.Game.CellType GetCellType(int indexX, int indexY)
         {
             int index = CellWidthCount * indexY + indexX;
+            if (index < 0 || index >= CellTypes.Length)
+                return default;
             return CellTypes[index];
+        }
+
+        public void SetCellColor(int indexX, int indexY, Color color)
+        {
+            if (_bakedTexture == null)
+                return;
+
+            _bakedTexture.SetPixel(indexX, indexY, color);
+            _bakedTexture.Apply();
+        }
+
+        public bool IsOutOfRange(int indexX, int indexY)
+        {
+            if (indexX < 0 || indexX >= CellWidthCount) return true;
+            if (indexY < 0 || indexY >= CellHeightCount) return true;
+            return false;
         }
 
         public void Bake()
         {
-            ColorTableSO colorTable = AssetDatabase.LoadAssetAtPath<ColorTableSO>("Assets/Deploy/Resources/ColorTable.asset");
+            ColorTableSO colorTable = ColorTableSO.LoadColorTable();
 
             _bakedTexture = new Texture2D(CellWidthCount, CellHeightCount, TextureFormat.RGB24, false);
             _bakedTexture.filterMode = FilterMode.Point;

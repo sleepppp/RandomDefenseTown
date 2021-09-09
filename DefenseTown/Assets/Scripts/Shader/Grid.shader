@@ -20,9 +20,11 @@ Shader "Unlit/Grid"
       Tags { "Queue" = "Transparent" "RenderType" = "Transparent" }
       LOD 100
 
-      ZWrite On // We need to write in depth to avoid tearing issues
+      ZWrite On 
       ZTest Always
-      Blend  SrcAlpha OneMinusSrcAlpha
+      Lighting Off
+      Blend SrcAlpha  OneMinusSrcAlpha
+      //Blend SrcColor DstColor
       //Blend SrcAlpha DstAlpha    
       //Blend One One
       Cull Off
@@ -124,7 +126,6 @@ Shader "Unlit/Grid"
 				
             // Apply mask multiplying by its alpha
             col.a *= maskCol.a;
-            //col.a = 0.1f;
 
             return col;
          }

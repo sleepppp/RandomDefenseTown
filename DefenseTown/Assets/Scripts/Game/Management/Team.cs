@@ -4,9 +4,18 @@ using UnityEngine;
 
 namespace My.Game
 {
+    using My.Data;
     using My.Core;
     public class Team
     {
+        public string Name { get; private set; }
+        public int CurrentHP { get; private set; }
+        public int FullHP { get; private set; }
+        public int CurrentMP { get; private set; }
+        public int FullMP { get; private set; }
+        public int CurrentMoney { get; private set; }
+        public int MaxUnitCount { get; private set; }
+
         TeamType _teamType;
 
         Architecture _architecture;
@@ -16,6 +25,24 @@ namespace My.Game
 
         public TeamType TeamType { get { return _teamType; } }
         public Architecture Architecture { get { return _architecture; } }
+        public int CurrentUnitCount
+        {
+            get
+            {
+                if (_units == null)
+                    return 0;
+                return _units.Count;
+            }
+        }
+        public int CurrentTowerCount
+        {
+            get
+            {
+                if (_towers == null)
+                    return 0;
+                return _towers.Count;
+            }
+        }
 
         public void Init(TeamType teamType)
         {
@@ -48,6 +75,26 @@ namespace My.Game
                     AddTower(allWorldObjects[i]);
                 }
             }
+        }
+
+        public void Init(int id)
+        {
+            TeamRecord record = Game.Instance.DataTableManager.GameData.TeamRecord.TryGetValue(id);
+            if(record == null)
+            {
+                Debug.LogError("해당 id 값의 데이터가 존재하지 않습니다 : " + id);
+                return;
+            }
+
+            Name = record.Name;
+            CurrentHP = record.StartHP;
+            FullHP = record.FullHP;
+            CurrentMP = record.StartMP;
+            FullMP = record.FullMP;
+            CurrentMoney = record.StartMoney;
+            MaxUnitCount = record.MaxUnitCount;
+
+            Init(record.TeamType);
         }
 
         public void AddTower(WorldObject obj)

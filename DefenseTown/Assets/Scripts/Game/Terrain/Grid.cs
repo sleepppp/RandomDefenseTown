@@ -34,6 +34,18 @@ namespace My.Game
 
         public GridSO GridSO { get { return _gridSO; } }
 
+        public Material SharedMaterial
+        {
+            get
+            {
+                if(_gridMaterial)
+                {
+                    _gridMaterial = GetComponent<MeshRenderer>().sharedMaterial;
+                }
+                return _gridMaterial;
+            }
+        }
+
         private void Start()
         {
             Init(_gridSO);
@@ -47,7 +59,8 @@ namespace My.Game
 
             Mesh mesh = MeshGenerator.CreateQuad(Vector3.zero, Vector3.one, 10);
             GetComponent<MeshFilter>().sharedMesh = mesh;
-           _gridMaterial = new Material(Shader.Find("Unlit/Grid"));
+            GetComponent<MeshCollider>().sharedMesh = mesh;
+           _gridMaterial = new Material(Shader.Find("Unlit/Grid2"));
             _meshRenderer = GetComponent<MeshRenderer>();
             _meshRenderer.sharedMaterial = _gridMaterial;
             _cellDataTexture = gridSO.GetTexture();
@@ -57,8 +70,10 @@ namespace My.Game
             ShowCellState(true);
             SetGridColor(Color.yellow);
 
+            gameObject.layer = LayerMask.NameToLayer("Grid");
+
             //todo 추 후 수정
-            transform.Translate(Vector3.up * 0.1f);
+            transform.position = new Vector3(transform.position.x, 0.1f,transform.position.z);
         }
 #endif
         public void Init(GridSO gridSO)
@@ -82,6 +97,9 @@ namespace My.Game
                 }
             }
             _cellDataTexture.Apply();
+
+            _pathFinder = new PathFinder();
+            _pathFinder.Init(this);
         }
 
         public void ShowGrid(bool bShow)
@@ -105,7 +123,7 @@ namespace My.Game
 
         public void SetCellState(int indexX, int indexY,CellState state, bool bAutoApplyTexture = true)
         {
-            if (IsOutOfRange(indexX, indexY))
+            if (IsOutOfRange(indexX, indexY) || _cellList == null)
                 return;
 
             _cellList[indexY, indexX].State = state;
@@ -113,6 +131,19 @@ namespace My.Game
             _cellDataTexture.SetPixel(indexX, indexY,Game.Instance.DataTableManager.ColorTable.GetColor(colorDesc));
 
             if (bAutoApplyTexture)
+            {
+                _cellDataTexture.Apply();
+            }
+        }
+
+        public void SetCellColor(int indexX, int indexY, Color color,bool bAutoApply = true)
+        {
+            if (IsOutOfRange(indexX, indexY))
+                return;
+
+            _cellDataTexture.SetPixel(indexX, indexY, color);
+
+            if(bAutoApply)
             {
                 _cellDataTexture.Apply();
             }
@@ -197,6 +228,17 @@ namespace My.Game
             result.x = (int)position.x;
             result.y = (int)position.z;
             return result;
+        }
+
+        public static bool RaycastToGrid(Camera camera, Vector3 mousePoint, out RaycastHit result)
+        {
+            Ray ray = camera.ScreenPointToRay(mousePoint);
+
+            if (Physics.Raycast(ray, out result, 100f, 1 << LayerMask.NameToLayer("Grid")))
+            {
+                return true;
+            }
+            return false;
         }
     }
 }
