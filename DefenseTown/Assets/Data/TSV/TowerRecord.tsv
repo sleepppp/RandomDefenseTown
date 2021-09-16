@@ -1,0 +1,2 @@
+ID(int)	Name(string)	TowerType(int)	BuildTowerPrefabName(string)	TowerPrefabName(string)	BuildingTime(float)	SizeX(int)	SizeY(int)
+1	Test	0	TestBuildTower	TestTower	5	3	3

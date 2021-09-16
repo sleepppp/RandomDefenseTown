@@ -7,7 +7,6 @@ using UnityEngine.SceneManagement;
 
 namespace My.Editor
 {
-    using My.Core;
     using My.Data;
     using My.Game;
     public class GridGenerateWindow : EditorWindow
@@ -319,11 +318,14 @@ namespace My.Editor
                 height = terrainData.size.y;
 
                 gridSO.Init((int)width, (int)height, Vector2.one);
-
+                //todo 나무 월드 좌표 처리 제대로 안되고 있는 중. 확인 필요
                 TreeInstance[] treeInstance = terrainData.treeInstances;
                 for(int i =0; i < treeInstance.Length; ++i)
                 {
-                    Vector2Int index = My.Game.Grid.TransformPositionToIndex(treeInstance[i].position);
+                    Vector3 worldPosition = treeInstance[i].position;
+                    worldPosition.x = worldPosition.x * width;
+                    worldPosition.z = worldPosition.z * height;
+                    Vector2Int index = My.Game.Grid.TransformPositionToIndex(worldPosition);
                     gridSO.SetCellType(index.x, index.y, CellType.Block);
                 }
             }

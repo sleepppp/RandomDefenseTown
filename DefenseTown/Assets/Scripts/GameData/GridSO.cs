@@ -6,7 +6,7 @@ namespace My.Data
 {
     public class GridSO : ScriptableObject
     {
-        public const string CreatePath = "Assets/Deploy/ScriptableObjects/Grid/";
+        public const string CreatePath = "Assets/Deploy/Resources/ScriptableObjects/Grid/";
 
         public int CellWidthCount;
         public int CellHeightCount;

@@ -5,7 +5,6 @@ using UnityEngine;
 namespace My.Game
 {
     using My.Data;
-    using My.Core;
     [RequireComponent(typeof(MeshRenderer),typeof(MeshFilter),typeof(MeshCollider))]
     public class Grid : MonoBehaviour
     {
@@ -187,6 +186,38 @@ namespace My.Game
                 return position;
         }
 
+        public void ConnectToCell(Vector2Int index,WorldObject worldObject)
+        {
+            GetCell(index.x,index.y)?.Connect(worldObject);
+        }
+
+        public void ConnectRangeToCell(Vector2Int centerIndex,int sizeX, int sizeY,WorldObject worldObject)
+        {
+            for(int y= centerIndex.y - sizeY / 2; y <= centerIndex.y + sizeY / 2; ++y )
+            {
+                for(int x= centerIndex.x - sizeX / 2; x <= centerIndex.x + sizeX / 2; ++x)
+                {
+                    GetCell(centerIndex.x, centerIndex.y)?.Connect(worldObject);
+                }
+            }
+        }
+
+        public void DisConnectToCell(Vector2Int index,WorldObject worldObject)
+        {
+            GetCell(index.x, index.y)?.DisConnect(worldObject);
+        }
+
+        public void DisConnectRangeToCell(Vector2Int centerIndex, int sizeX, int sizeY, WorldObject worldObject)
+        {
+            for (int y = centerIndex.y - sizeY / 2; y <= centerIndex.y + sizeY / 2; ++y)
+            {
+                for (int x = centerIndex.x - sizeX / 2; x <= centerIndex.x + sizeX / 2; ++x)
+                {
+                    GetCell(centerIndex.x, centerIndex.y)?.DisConnect(worldObject);
+                }
+            }
+        }
+
         public void CalcShaderProperties()
         {
             int widthMulCount = _cellWidthCount / 10;
@@ -213,6 +244,7 @@ namespace My.Game
                     cell.Init
                         (
                         new Vector3(x, 0f, y),
+                        new Vector2Int(x,y),
                         Vector2.one,
                         CellType.Moveable
                         );

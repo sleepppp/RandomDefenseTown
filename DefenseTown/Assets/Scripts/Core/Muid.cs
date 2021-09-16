@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-namespace My.Core
+namespace My
 {
     using My.Game;
     [Serializable]

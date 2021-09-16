@@ -5,7 +5,6 @@ using UnityEngine.EventSystems;
 
 namespace My.UI
 {
-    using My.Core;
     public class UIManager
     {
         Dictionary<UIPanelType, UIBase> _uiList = new Dictionary<UIPanelType, UIBase>();

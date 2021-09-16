@@ -4,7 +4,6 @@ using UnityEngine;
 
 namespace My.Game
 {
-    using My.Core;
     public class WorldObject : MonoBehaviour
     {
         [Header("WorldObject")]

@@ -5,7 +5,6 @@ using UnityEngine;
 namespace My.Game
 {
     using My.Data;
-    using My.Core;
     public class Team
     {
         public string Name { get; private set; }
@@ -15,6 +14,7 @@ namespace My.Game
         public int FullMP { get; private set; }
         public int CurrentMoney { get; private set; }
         public int MaxUnitCount { get; private set; }
+        public int MaxTowerCount { get; private set; }
 
         TeamType _teamType;
 
@@ -94,12 +94,15 @@ namespace My.Game
             CurrentMoney = record.StartMoney;
             MaxUnitCount = record.MaxUnitCount;
 
-            Init(record.TeamType);
+            //todo MaxTowerCount
+
+            Init((TeamType)record.TeamType);
         }
 
         public void AddTower(WorldObject obj)
         {
-            if (obj is Tower == false)
+            if (obj is Tower == false && 
+                obj is BuildTower == false)
                 return;
             _towers.Add(obj.Muid, obj);
         }
@@ -153,6 +156,15 @@ namespace My.Game
                     result.Add(obj);
             }
             return result;
+        }
+
+        public void DestroyTower(Muid muid)
+        {
+            WorldObject tower = _towers.TryGetValue(muid);
+            if (tower == null)
+                return;
+            _towers.Remove(muid);
+            Game.Instance.MemoryManager.Destroy(tower.gameObject);
         }
     }
 }

@@ -8,8 +8,10 @@ namespace My.Game
     {
         public Vector3 Position;
         public Vector2 Size;
+        public Vector2Int Index;
         public CellState State;
         public CellType Type;
+        public List<WorldObject> OnObjects;
 
         public Vector3 CenterPos
         {
@@ -27,12 +29,33 @@ namespace My.Game
             }
         }
 
-        public void Init(Vector3 position, Vector2 size, CellType type, CellState state = CellState.Normal)
+        public void Init(Vector3 position,Vector2Int index, Vector2 size, CellType type, CellState state = CellState.Normal)
         {
             Position = position;
+            Index = index;
             Size = size;
             Type = type;
             State = state;
+            OnObjects = new List<WorldObject>();
+        }
+
+        public void Connect(WorldObject onObject)
+        {
+            OnObjects.AddUnique(onObject);
+
+            State = CellState.Block;
+        }
+
+        public void DisConnect(WorldObject onObject)
+        {
+            OnObjects.Remove(onObject);
+
+            State = OnObjects.Count == 0 ? CellState.Normal : CellState.Block;
+        }
+
+        public bool CanCreateTower()
+        {
+            return CanPass;
         }
     }
 }

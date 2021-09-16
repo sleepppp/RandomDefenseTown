@@ -1,10 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 namespace My.Game
 {
-    using My.Core;
+    using My.Data;
     public class World : MonoBehaviour
     {
         public Grid Grid;
@@ -66,6 +67,56 @@ namespace My.Game
                     return result;
             }
             return result;
+        }
+
+        public void CreateBuildTower(int towerID, Cell targetCell ,TeamType teamType,bool isPlayerOwner,Action<TowerBase> callback)
+        {
+            TowerRecord record = Game.Instance.DataTableManager.GameData.TowerRecord.TryGetValue(towerID);
+            if(record == null)
+            {
+                Debug.LogErrorFormat("{0}의 타워 ID값이 없어서 생성할 수 없습니다");
+                return;
+            }
+            string towerAssetPath = "Assets/Deploy/Game/WorldObject/Tower/" + record.BuildTowerPrefabName + ".prefab";
+            
+            AssetManager.LoadAssetAsync<GameObject>(towerAssetPath, (prefab) =>
+            {
+                GameObject newObject = Game.Instance.MemoryManager.Instantiate(prefab); //todo 부모 지정
+                TowerBase tower = newObject.GetComponent<TowerBase>();
+                tower.DynamicInit(WorldObjectType.Tower, teamType, isPlayerOwner);
+                tower.Init(record.ID, targetCell);
+
+                GetTeam(teamType).AddTower(tower);
+
+                callback?.Invoke(tower);
+            });
+        }
+
+        public void CreateTower(int towerID,Cell targetCell, TeamType teamType,bool isPlayerOwner,Action<TowerBase> callback)
+        {
+            TowerRecord record = Game.Instance.DataTableManager.GameData.TowerRecord.TryGetValue(towerID);
+            if (record == null)
+            {
+                Debug.LogErrorFormat("{0}의 타워 ID값이 없어서 생성할 수 없습니다");
+                return;
+            }
+            string towerAssetPath = "Assets/Deploy/Game/WorldObject/Tower/" + record.TowerPrefabName + ".prefab";
+            AssetManager.LoadAssetAsync<GameObject>(towerAssetPath, (prefab) =>
+            {
+                GameObject newObject = Game.Instance.MemoryManager.Instantiate(prefab); //todo 부모 지정
+                TowerBase tower = newObject.GetComponent<TowerBase>();
+                tower.DynamicInit(WorldObjectType.Tower, teamType, isPlayerOwner);
+                tower.Init(record.ID, targetCell);
+
+                GetTeam(teamType).AddTower(tower);
+
+                callback?.Invoke(tower);
+            });
+        }
+
+        public void DestroyTower(WorldObject worldObject)
+        {
+            GetTeam(worldObject.TeamType).DestroyTower(worldObject.Muid);
         }
     }
 }

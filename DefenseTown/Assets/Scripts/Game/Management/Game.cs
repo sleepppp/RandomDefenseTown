@@ -4,7 +4,6 @@ using UnityEngine;
 
 namespace My.Game
 {
-    using My.Core;
     using My.UI;
     public class Game : MonoBehaviourSingleton<Game>
     {
@@ -16,10 +15,20 @@ namespace My.Game
 
         public RoutineManager RoutineManager;
 
+        MemoryManager _memoryManager;
+
+        public MemoryManager MemoryManager
+        {
+            get
+            {
+                if (_memoryManager == null)
+                    _memoryManager = new MemoryManager();
+                return _memoryManager;
+            }
+        }
         private void Awake()
         {
-            //todo 임시. .추 후 SceneTransition 작업하면 변경
-            SceneStart();
+            GameStart();
         }
 
         private void Update()
@@ -30,16 +39,19 @@ namespace My.Game
                 World.GameUpdate();
         }
 
-        public void SceneStart()
+        public void GameStart()
         {
             if (RoutineManager == null)
                 RoutineManager = new RoutineManager();
             if (DataTableManager == null)
                 DataTableManager = new DataTableManager();
+            //todo SceneTransision 생기면 월드는 나중에 초기화
             if (World == null)
                 World = FindObjectOfType<World>();
             if (UIManager == null)
                 UIManager = new UIManager();
+            if (_memoryManager == null)
+                _memoryManager = new MemoryManager();
 
             DataTableManager.Init();
             World.Init();

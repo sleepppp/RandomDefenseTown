@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace My.Core
+namespace My
 {
     public static class CollectionExtensions
     {
@@ -11,6 +11,14 @@ namespace My.Core
             TValue result = null;
             dic.TryGetValue(key, out result);
             return result;
+        }
+
+        public static void AddUnique<TValue>(this List<TValue> list, TValue value)
+        {
+            if (list.Contains(value))
+                return;
+
+            list.Add(value);
         }
     }
 }

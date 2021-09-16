@@ -11,9 +11,13 @@ namespace My.Data
 		public string TeamRecordPath = "Assets/Data/TSV/TeamRecord.tsv";
 		public Dictionary<int,TeamRecord> TeamRecord;
 
+		public string TowerRecordPath = "Assets/Data/TSV/TowerRecord.tsv";
+		public Dictionary<int,TowerRecord> TowerRecord;
+
 		public GameData()
 		{
 			TeamRecord  =  TableStream.LoadTableByTSV(TeamRecordPath).TableToDictionary<int,TeamRecord>();
+			TowerRecord  =  TableStream.LoadTableByTSV(TowerRecordPath).TableToDictionary<int,TowerRecord>();
 		}
 	}
 }

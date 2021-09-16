@@ -12,6 +12,7 @@ namespace My.Game
 
         public void Init()
         {
+            //todo GameData TSV읽어 오는 방법 수정(현재 직접 파일 스트림으로 읽는데 Addressable로 로드하게끔 처리)
             GameData = new GameData();
 
             LoadColorTable();

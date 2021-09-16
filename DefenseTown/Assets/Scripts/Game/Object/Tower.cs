@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace My.Game
 {
-    public class Tower : WorldObject
+    public class Tower : TowerBase
     {
 
     }

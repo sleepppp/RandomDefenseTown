@@ -33,6 +33,10 @@ namespace My.Game
         Block = 1,
     }
 
+    public enum TowerType : int
+    {
+        UnitCreation = 0,
+    }
 }
 
 

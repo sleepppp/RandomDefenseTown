@@ -6,7 +6,7 @@ namespace My.Game
 {
     public class Architecture : WorldObject
     {
-        Coroutine _moveCoroutine;
+        Coroutine _behaviourCoroutine;
 
         public override void OnPickStart()
         {
@@ -27,9 +27,16 @@ namespace My.Game
 
         public void MoveTo(Vector3 destination)
         {
-            if (_moveCoroutine != null)
-                StopCoroutine(_moveCoroutine);
-            _moveCoroutine = StartCoroutine(CoroutineMove(destination));
+            if (_behaviourCoroutine != null)
+                StopCoroutine(_behaviourCoroutine);
+            _behaviourCoroutine = StartCoroutine(CoroutineMove(destination));
+        }
+
+        public void RequestCreateTower(int towerID, Cell targetCell)
+        {
+            if (_behaviourCoroutine != null)
+                StopCoroutine(_behaviourCoroutine);
+            _behaviourCoroutine = StartCoroutine(CoroutineCreateTower(towerID, targetCell));
         }
 
         void CheckInput()
@@ -58,7 +65,28 @@ namespace My.Game
                 yield return null;
             }
 
-            _moveCoroutine = null;
+            _behaviourCoroutine = null;
+        }
+
+        IEnumerator CoroutineCreateTower(int towerID, Cell targetCell)
+        {
+            while (Vector3.Distance(targetCell.Position, transform.position) >= 1f)
+            {
+                //todo speed Config파일에 정의하기
+                transform.position = Vector3.Lerp(transform.position, targetCell.Position, 2f * Time.deltaTime);
+                yield return null;
+            }
+
+            //todo targetCell 주변 셀도 검사
+            if(targetCell.CanCreateTower())
+            {
+                Game.Instance.World.CreateBuildTower(towerID, targetCell, TeamType, IsPlayerOwner, (tower) => 
+                {
+                    
+                });
+            }
+
+            _behaviourCoroutine = null;
         }
     }
 }
