@@ -55,6 +55,7 @@ namespace My.Game
 
             DataTableManager.Init();
             World.Init();
+            UIManager.Init();
         }
     }
 }

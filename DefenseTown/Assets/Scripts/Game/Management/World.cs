@@ -39,10 +39,14 @@ namespace My.Game
             _pickSystem.GameUpdate();
         }
         
-
         public Team GetTeam(TeamType type)
         {
             return _teams.TryGetValue(type);
+        }
+
+        public Dictionary<TeamType,Team>.ValueCollection GetAllTeam()
+        {
+            return _teams.Values;
         }
 
         public WorldObject GetUnit(Muid muid)
