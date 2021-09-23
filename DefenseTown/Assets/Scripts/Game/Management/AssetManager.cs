@@ -20,6 +20,16 @@ namespace My.Game
             };
         }
 
+        public static void CreatePrefabAsync(string path,Action<GameObject> callback)
+        {
+            LoadAssetAsync<GameObject>(path, (prefab)=> 
+            {
+                GameObject newObject = Game.Instance.MemoryManager.Instantiate(prefab);
+                callback?.Invoke(newObject);
+            });
+        }
+
+        //todo 동기 로드 지원할 경우 추가
         //public static void LoadAsset<T>(string path, Action<T> callback) where T : UnityEngine.Object
         //{
         //  

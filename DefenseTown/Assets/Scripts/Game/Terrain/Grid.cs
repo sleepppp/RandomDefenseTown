@@ -228,6 +228,24 @@ namespace My.Game
             _gridMaterial.SetFloat(_GraduationScaleYKey, heightMulCount);
         }
 
+        public bool CanCreate(int towerID, Cell centerCell)
+        {
+            TowerRecord record = Game.Instance.GameData.TowerRecord.TryGetValue(towerID);
+            if (record == null)
+                return false;
+
+            for (int y = centerCell.Index.y - record.SizeY / 2; y <= centerCell.Index.y + record.SizeY / 2; ++y)
+            {
+                for (int x = centerCell.Index.x - record.SizeX / 2; x <= centerCell.Index.x + record.SizeX / 2; ++x)
+                {
+                    if (IsOutOfRange(x, y) || GetCell(x, y).CanPass == false)
+                        return false;
+                }
+            }
+
+            return true;
+        }
+
         void BindMaskTexture()
         {
             _gridMaterial.SetTexture(_maskTextureKey, _cellDataTexture);

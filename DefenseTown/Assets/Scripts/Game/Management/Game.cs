@@ -5,6 +5,7 @@ using UnityEngine;
 namespace My.Game
 {
     using My.UI;
+    using My.Data;
     public class Game : MonoBehaviourSingleton<Game>
     {
         public World World;
@@ -26,6 +27,9 @@ namespace My.Game
                 return _memoryManager;
             }
         }
+
+        public GameData GameData { get { return DataTableManager?.GameData; } }
+
         private void Awake()
         {
             GameStart();

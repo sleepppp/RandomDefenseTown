@@ -101,15 +101,14 @@ namespace My.Game
 
         public void AddTower(WorldObject obj)
         {
-            if (obj is Tower == false && 
-                obj is BuildTower == false)
+            if(obj.IsTower() == false)
                 return;
             _towers.Add(obj.Muid, obj);
         }
 
         public void AddUnit(WorldObject obj)
         {
-            if (obj is Unit == false)
+            if (obj.IsUnit() == false)
                 return;
             _units.Add(obj.Muid, obj);
         }

@@ -77,8 +77,8 @@ namespace My.Game
                 yield return null;
             }
 
-            //todo targetCell 주변 셀도 검사
-            if(targetCell.CanCreateTower())
+            //todo targetCell 주변 셀도 검사해서 설치 가능한지 판정
+            if(Game.Instance.World.Grid.CanCreate(towerID,targetCell))
             {
                 Game.Instance.World.CreateBuildTower(towerID, targetCell, TeamType, IsPlayerOwner, (tower) => 
                 {

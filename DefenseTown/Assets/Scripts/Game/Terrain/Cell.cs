@@ -48,7 +48,8 @@ namespace My.Game
 
         public void DisConnect(WorldObject onObject)
         {
-            OnObjects.Remove(onObject);
+            if(OnObjects.Contains(onObject))
+                OnObjects.Remove(onObject);
 
             State = OnObjects.Count == 0 ? CellState.Normal : CellState.Block;
         }
@@ -56,6 +57,17 @@ namespace My.Game
         public bool CanCreateTower()
         {
             return CanPass;
+        }
+
+        public TowerBase GetTower()
+        {
+            foreach(WorldObject worldObject in OnObjects)
+            {
+                if (worldObject.IsTower())
+                    return worldObject as TowerBase;
+            }
+
+            return null;
         }
     }
 }

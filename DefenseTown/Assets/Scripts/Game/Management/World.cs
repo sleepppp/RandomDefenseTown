@@ -78,14 +78,14 @@ namespace My.Game
             TowerRecord record = Game.Instance.DataTableManager.GameData.TowerRecord.TryGetValue(towerID);
             if(record == null)
             {
-                Debug.LogErrorFormat("{0}의 타워 ID값이 없어서 생성할 수 없습니다");
+                Debug.LogErrorFormat("{0}의 타워 ID값이 없어서 생성할 수 없습니다",towerID);
                 return;
             }
             string towerAssetPath = "Assets/Deploy/Game/WorldObject/Tower/" + record.BuildTowerPrefabName + ".prefab";
             
-            AssetManager.LoadAssetAsync<GameObject>(towerAssetPath, (prefab) =>
+            AssetManager.CreatePrefabAsync(towerAssetPath, (newObject) =>
             {
-                GameObject newObject = Game.Instance.MemoryManager.Instantiate(prefab); //todo 부모 지정
+                //todo 부모 지정
                 TowerBase tower = newObject.GetComponent<TowerBase>();
                 tower.DynamicInit(WorldObjectType.Tower, teamType, isPlayerOwner);
                 tower.Init(record.ID, targetCell);
@@ -101,13 +101,21 @@ namespace My.Game
             TowerRecord record = Game.Instance.DataTableManager.GameData.TowerRecord.TryGetValue(towerID);
             if (record == null)
             {
-                Debug.LogErrorFormat("{0}의 타워 ID값이 없어서 생성할 수 없습니다");
+                Debug.LogErrorFormat("{0}의 타워 ID값이 없어서 생성할 수 없습니다",towerID);
                 return;
             }
+
             string towerAssetPath = "Assets/Deploy/Game/WorldObject/Tower/" + record.TowerPrefabName + ".prefab";
-            AssetManager.LoadAssetAsync<GameObject>(towerAssetPath, (prefab) =>
+            AssetManager.CreatePrefabAsync(towerAssetPath, (newObject) =>
             {
-                GameObject newObject = Game.Instance.MemoryManager.Instantiate(prefab); //todo 부모 지정
+                //새로 생성전에 기존에 있던 BuildTower는 제거해 주어야 한다.
+                TowerBase prevTower = targetCell.GetTower();
+                if(prevTower != null)
+                {
+                    prevTower.DestroyTower();
+                }
+
+                //todo 부모지정
                 TowerBase tower = newObject.GetComponent<TowerBase>();
                 tower.DynamicInit(WorldObjectType.Tower, teamType, isPlayerOwner);
                 tower.Init(record.ID, targetCell);
@@ -121,6 +129,11 @@ namespace My.Game
         public void DestroyTower(WorldObject worldObject)
         {
             GetTeam(worldObject.TeamType).DestroyTower(worldObject.Muid);
+        }
+
+        public WorldObject GetPickObject()
+        {
+            return _pickSystem.PickObject;
         }
     }
 }

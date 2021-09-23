@@ -15,9 +15,9 @@ namespace My.Game
             if(_timer >= _record.BuildingTime)
             {
                 //todo Cell ÁöÁ¤
-                Game.Instance.World.CreateTower(_record.ID,null, TeamType, IsPlayerOwner,(tower)=> 
+                Game.Instance.World.CreateTower(_record.ID, _centerCell, TeamType, IsPlayerOwner,(tower)=> 
                 {
-                    DestroyTower();
+
                 });
             }
         }

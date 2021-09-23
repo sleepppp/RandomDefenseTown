@@ -33,22 +33,16 @@ namespace My.Game
         }
 
         //피킹 했을 때
-        public virtual void OnPickStart()
-        {
-
-        }
-
+        public virtual void OnPickStart() { }
         //피킹 해제 했을 때
-        public virtual void OnPickEnd()
-        {
-
-        }
+        public virtual void OnPickEnd() { }
 
         //Pick되어 있는 동안 호출
-        public virtual void OnPickUpdate()
-        {
+        public virtual void OnPickUpdate() { }
 
-        }
+        public bool IsTower() { return WorldObjectType == WorldObjectType.Tower; }
+        public bool IsUnit() { return WorldObjectType == WorldObjectType.Unit; }
+        public bool IsArchitecture() { return WorldObjectType == WorldObjectType.Architecture; }
     }
 }
 
